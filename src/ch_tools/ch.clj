@@ -1,6 +1,7 @@
 (ns ch-tools.ch
   (:require [clojure.string :as str]
             [clojure.tools.logging :refer [info warn]]
+            [ch-tools.common :as c]
             [ch-tools.sql :as sql]))
 
 (import java.sql.DriverManager)

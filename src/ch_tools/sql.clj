@@ -1,5 +1,6 @@
 (ns ch-tools.sql
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [ch-tools.common :as c]))
 
 (defrecord Query [fields sql])
 
