@@ -1,7 +1,5 @@
-(ns gather.sql
-  (:require
-   [clojure.string :as str]
-   [gather.common :as c]))
+(ns ch-tools.sql
+  (:require [clojure.string :as str]))
 
 (defrecord Query [fields sql])
 

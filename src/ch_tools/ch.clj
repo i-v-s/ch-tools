@@ -1,8 +1,7 @@
-(ns gather.ch
+(ns ch-tools.ch
   (:require [clojure.string :as str]
             [clojure.tools.logging :refer [info warn]]
-            [gather.common :as c]
-            [gather.sql :as sql]))
+            [ch-tools.sql :as sql]))
 
 (import java.sql.DriverManager)
 
