@@ -52,7 +52,7 @@
       (Query. (second data) (last data)))))
 
 (defn select
-  [fields & {:keys [with from where group-by order-by]}]
+  [fields & {:keys [with from where group-by order-by limit]}]
   (let [from' (prepare-from from with)
         parsed (parse-fields (or fields (:fields from')))]
     (Query.
@@ -75,7 +75,9 @@
       (when group-by
         (str "\nGROUP BY " group-by))
       (when order-by
-        (str "\nORDER BY " order-by))))))
+        (str "\nORDER BY " order-by))
+      (when limit
+        (str "\nLIMIT " limit))))))
 
 (defn union-all
   [& qs]

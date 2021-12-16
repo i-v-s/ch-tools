@@ -78,6 +78,7 @@
 (defmethod read-result-set "Nullable(DateTime)" [_ rs j] (.getTimestamp rs j))
 (defmethod read-result-set "DateTime" [_ rs j] (.getTimestamp rs j))
 
+
 (defn fetch-row-hm
   [result-set metadata]
   (->> metadata

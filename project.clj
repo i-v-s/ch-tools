@@ -6,4 +6,6 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [org.clojure/tools.logging "1.2.1"]
                  [com.github.housepower/clickhouse-native-jdbc "2.6.2"]]
-  :repl-options {:init-ns ch-tools.core})
+  :repl-options {:init-ns ch-tools.core}
+  :deploy-repositories [["releases" :clojars]
+                        ["snapshots" :clojars]])

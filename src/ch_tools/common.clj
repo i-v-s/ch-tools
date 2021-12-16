@@ -22,9 +22,3 @@
      (let [kr (key item)]
        (assoc coll kr (conj (get coll kr []) (value item)))))
    {} coll))
-
-(defn group-by-contains
-  [possible values]
-  (let [{not-exists false exists true}
-        (group-by (partial contains? possible) values)]
-    [exists not-exists]))
