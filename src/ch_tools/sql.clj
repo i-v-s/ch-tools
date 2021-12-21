@@ -53,6 +53,7 @@
 
 (defn select
   [fields & {:keys [with from where group-by order-by limit]}]
+  (assert from)
   (let [from' (prepare-from from with)
         parsed (parse-fields (or fields (:fields from')))]
     (Query.

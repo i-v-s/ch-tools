@@ -72,6 +72,7 @@
 (defmulti read-result-set (fn [t _ _] t))
 (defmethod read-result-set "UInt8" [_ rs j] (.getLong rs j))
 (defmethod read-result-set "UInt32" [_ rs j] (.getLong rs j))
+(defmethod read-result-set "UInt64" [_ rs j] (.getLong rs j))
 (defmethod read-result-set "Float32" [_ rs j] (.getFloat rs j))
 (defmethod read-result-set "Float64" [_ rs j] (.getDouble rs j))
 (defmethod read-result-set "String" [_ rs j] (.getString rs j))
