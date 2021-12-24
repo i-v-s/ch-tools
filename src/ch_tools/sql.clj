@@ -51,6 +51,15 @@
       (recur (apply prepare-from-fn data))
       (Query. (second data) (last data)))))
 
+(defn prepare-where
+  [w]
+  (if (or (seq? w) (vector? w))
+    (let [s (->> w (filter some?) (map #(str "(" % ")")))]
+      (and
+       (not-empty s)
+       (str/join " AND " s)))
+    w))
+
 (defn select
   [fields & {:keys [with from where group-by order-by limit]}]
   (assert from)
@@ -71,8 +80,8 @@
                      (str v " AS " k)
                      k)))
       "\nFROM " (:sql from')
-      (when where
-        (str "\nWHERE " where))
+      (when-let [where' (prepare-where where)]
+        (str "\nWHERE " where'))
       (when group-by
         (str "\nGROUP BY " group-by))
       (when order-by
