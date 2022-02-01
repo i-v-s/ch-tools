@@ -76,6 +76,7 @@
 (defmethod read-result-set "Float32" [_ rs j] (.getFloat rs j))
 (defmethod read-result-set "Float64" [_ rs j] (.getDouble rs j))
 (defmethod read-result-set "String" [_ rs j] (.getString rs j))
+(defmethod read-result-set "Array(String)" [_ rs j] (into [] (.getArray (.getArray rs j))))
 (defmethod read-result-set "Nullable(DateTime)" [_ rs j] (.getTimestamp rs j))
 (defmethod read-result-set "DateTime" [_ rs j] (.getTimestamp rs j))
 
@@ -176,6 +177,13 @@
     (exec! st)
     fetch-all-hm
     (c/vec-to-map-of-vec (if db :table db-table-key) :partition)))
+
+(defn fetch-storage
+  ([conn db]
+   (->> (sql/select ["name" "data_paths"] :from "system.tables" :where (str "database = '" db "'"))
+        (fetch-all conn)
+        (into {})))
+  ([conn] (fetch-storage conn (current-db conn))))
 
 (defn exec-vec!
   "Execute vec of queries"
