@@ -4,17 +4,13 @@
             [ch-tools.common :as c]
             [ch-tools.sql :as sql]))
 
+(import java.sql.Timestamp)
 (import java.sql.DriverManager)
 
 (defn connect
   "Connect to Clickhouse"
   [url]
   (DriverManager/getConnection url))
-
-(defn connect-st
-  "Connect to Clickhouse"
-  [url & args]
-  (.createStatement (apply connect url args)))
 
 (defmulti exec! "Execute SQL query" (fn [c _] (class c)))
 
@@ -80,7 +76,6 @@
 (defmethod read-result-set "Nullable(DateTime)" [_ rs j] (.getTimestamp rs j))
 (defmethod read-result-set "DateTime" [_ rs j] (.getTimestamp rs j))
 
-
 (defn fetch-row-hm
   [result-set metadata]
   (->> metadata
@@ -106,6 +101,8 @@
        (read-result-set (.getColumnTypeName md i) result-set i))))
   ([conn query]
    (fetch-one (exec! conn query))))
+
+(def fetch-item (comp first fetch-one))
 
 (defn fetcher
   [row-fn result-set]
@@ -193,32 +190,30 @@
       (partial exec! (.createStatement conn))
       queries)))
 
-(defmulti set-pst-item class)
-(defmethod set-pst-item java.lang.Float    [_] (fn [p-st i v] (.setFloat p-st i v)))
-(defmethod set-pst-item java.lang.Double   [_] (fn [p-st i v] (.setDouble p-st i v)))
-(defmethod set-pst-item java.lang.Boolean  [_] (fn [p-st i v] (.setBoolean p-st i v)))
-(defmethod set-pst-item java.lang.Long     [_] (fn [p-st i v] (.setLong p-st i v)))
-(defmethod set-pst-item java.lang.String   [_] (fn [p-st i v] (.setString p-st i v)))
-(defmethod set-pst-item java.sql.Timestamp [_] (fn [p-st i v] (.setTimestamp p-st i v)))
-
-(defn set-pst-item!
-  [p-st i v]
-  ((set-pst-item v) p-st i v))
+(defmulti set-pst-item! (fn [_ _ v] (class v)))
+(defmethod set-pst-item! Float     [p-st i v] (.setFloat     p-st i v))
+(defmethod set-pst-item! Double    [p-st i v] (.setDouble    p-st i v))
+(defmethod set-pst-item! Boolean   [p-st i v] (.setBoolean   p-st i v))
+(defmethod set-pst-item! Long      [p-st i v] (.setLong      p-st i v))
+(defmethod set-pst-item! String    [p-st i v] (.setString    p-st i v))
+(defmethod set-pst-item! Timestamp [p-st i v] (.setTimestamp p-st i v))
 
 (defn add-batch!
   "Add row of data to prepared statement"
   [p-st values]
   (doseq [[i v] (map-indexed vector values)]
-    (set-pst-item! p-st (+ i 1) v))
+    (set-pst-item! p-st (inc i) v))
   (.addBatch p-st))
+
+(defn prepare [conn query] (.prepareStatement conn query))
 
 (defn insert-many!
   "Insert many rows of data"
-  [conn query items]
-  (let [p-st (.prepareStatement conn query)]
-    (doseq [item items]
-      (add-batch! p-st item))
-    (.executeBatch p-st)))
+  ([p-st items]
+   (doseq [item items] (add-batch! p-st item))
+   (.executeBatch p-st))
+  ([conn query items]
+   (-> conn (prepare query) (insert-many! items))))
 
 (defn conj-fields
   "Add field(s) to table record"
