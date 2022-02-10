@@ -1,6 +1,6 @@
-(ns ch-tools.sql
+(ns house.sql
   (:require [clojure.string :as str]
-            [ch-tools.common :as c]))
+            [house.common   :as c]))
 
 (defrecord Query [fields sql])
 

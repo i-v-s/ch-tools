@@ -1,4 +1,4 @@
-(ns ch-tools.core-test
+(ns house.core-test
   ;(:require [clojure.test :refer :all]
   ;          [ch-tools.core :refer :all])
   )

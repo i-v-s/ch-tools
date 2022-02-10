@@ -1,7 +1,7 @@
-(ns ch-tools.ch-test
+(ns house.ch-test
   (:require [clojure.test :refer :all]
-            [ch-tools.ch  :as ch]
-            [ch-tools.sql :as sql]))
+            [house.ch  :as ch]
+            [house.sql :as sql]))
 
 (def ^:dynamic *conn* nil)
 

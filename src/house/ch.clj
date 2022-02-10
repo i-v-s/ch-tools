@@ -1,8 +1,8 @@
-(ns ch-tools.ch
-  (:require [clojure.string :as str]
-            [clojure.tools.logging :refer [info warn]]
-            [ch-tools.common :as c]
-            [ch-tools.sql :as sql]))
+(ns house.ch
+  (:require [clojure.tools.logging :refer [info warn]]
+            [clojure.string :as str]
+            [house.common   :as c]
+            [house.sql      :as sql]))
 
 (import java.sql.Timestamp)
 (import java.sql.DriverManager)

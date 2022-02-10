@@ -1,4 +1,4 @@
-(ns ch-tools.common
+(ns house.common
   (:require [clojure.string :as str]))
 
 (defn str-some [& args] (apply str (filter some? args)))
