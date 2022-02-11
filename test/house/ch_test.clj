@@ -61,7 +61,22 @@
       (let [p-st (ch/prepare *conn* (ch/insert-query "tab2" (first rec)))]
         (doseq [i (range 40)]
           (ch/insert-many! p-st (map (comp vector (partial + (* i 5000))) (range 100)))))
-      (is (= 4000 (ch/fetch-item *conn* (sql/select ["count()"] :from "tab2")))))))
+      (is (= 4000 (ch/fetch-item *conn* (sql/select ["count()"] :from "tab2")))))
+    (testing "Too wide"
+      (let [cols 4000
+            rec3 (->> cols range
+                     (map (juxt (partial str "c") (constantly "UInt32")))
+                     (apply concat)
+                     (apply array-map :id "Int32 CODEC(Delta(4), LZ4)")
+                     (assoc rec 0))]
+        (->> rec3
+             (hash-map "tab3")
+             (ch/ensure-tables! *conn*))
+        (let [p-st (->> rec3 first (ch/insert-query "tab3") (ch/prepare *conn*))]
+          (ch/insert-many! p-st
+                           (for [row (range 50)]
+                             (into [] (map (comp (partial + row) (partial * 7)) (range (inc cols)))))))
+        (is (= 50 (ch/fetch-item *conn* (sql/select ["count()"] :from "tab3"))))))))
 
 (deftest freeze-test
   (create-table 1000))
